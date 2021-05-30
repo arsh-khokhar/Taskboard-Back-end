@@ -1,8 +1,6 @@
 const router = require ('express').Router ();
-
-router.post ('/register', (req, res) => {
-  res.send ('Register');
-});
+const bcrypt = require ('bcrypt');
+const pool = require ('../dbConfig');
 
 router.post ('/login', async (req, res) => {
   const email = req.body.email.trim ();
@@ -13,9 +11,8 @@ router.post ('/login', async (req, res) => {
     );
     if (res_users.rows.length > 0) {
       const auth = await bcrypt.compare (password, res_users.rows[0].password);
-      console.log (auth);
       if (auth) {
-        res.header ('auth-token', token).send (token);
+        res.send ('User authenticated!');
       } else {
         res.send ('Password is incorrect!');
       }
@@ -25,6 +22,10 @@ router.post ('/login', async (req, res) => {
   } catch (error) {
     console.error (error.message);
   }
+});
+
+router.post ('/register', (req, res) => {
+  res.send ('Register');
 });
 
 module.exports = router;
