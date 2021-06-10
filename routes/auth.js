@@ -20,12 +20,13 @@ router.post('/login', async (req, res) => {
 					{email: res_users.rows[0].email},
 					process.env.TOKEN_SECRET
 				);
-				res.header('auth-token').send(token);
+				res.status(200).header('auth-token').send(token);
+				//res.status(200).cookie('auth-token', token).send('Success');
 			} else {
-				res.send('Password is incorrect!');
+				res.status(400).send('Password is incorrect!');
 			}
 		} else {
-			res.send({message: 'User does not exist!'});
+			res.status(400).send('User does not exist!');
 		}
 	} catch (error) {
 		console.error(error.message);
