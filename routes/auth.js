@@ -21,7 +21,6 @@ router.post('/login', async (req, res) => {
 					process.env.TOKEN_SECRET
 				);
 				res.status(200).header('auth-token').send(token);
-				//res.status(200).cookie('auth-token', token).send('Success');
 			} else {
 				res.status(400).send('Password is incorrect!');
 			}
