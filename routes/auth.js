@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../dbConfig');
 
 router.post('/login', async (req, res) => {
+	console.log(req);
 	const email = req.body.email.trim();
 	const password = req.body.password.trim();
 	try {

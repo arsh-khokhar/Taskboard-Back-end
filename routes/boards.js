@@ -2,6 +2,12 @@ const router = require('express').Router();
 const verify = require('./verifyToken');
 const pool = require('../dbConfig');
 
+const getSortedTasks = (arg_tasks) => {
+	return arg_tasks.sort((a, b) =>
+		a.next_id > b.next_id ? 1 : b.next_id > a.next_id ? -1 : 0
+	);
+};
+
 router.get('/', verify, async (req, res) => {
 	auth_user = req.header('auth-user');
 	try {
@@ -33,7 +39,8 @@ router.get('/:board_id', verify, async (req, res) => {
 			const tasks = await pool.query(
 				`SELECT * FROM tasks WHERE list_id='${new_list.list_id}'`
 			);
-			new_list.tasks = tasks.rows;
+			getSortedTasks(tasks.rows);
+			new_list.tasks = getSortedTasks(tasks.rows);
 			to_send.lists[`${new_list.list_id}`] = new_list;
 		}
 		res.send(to_send);
