@@ -27,7 +27,8 @@ const getSortedTasks = arg_tasks => {
 router.get("/:board_id", verify, async (req, res) => {
   var to_send = {
     title: null,
-    lists: {}
+    lists: {},
+    collaborators: {}
   };
   const board_id = req.params.board_id;
   try {
@@ -36,6 +37,7 @@ router.get("/:board_id", verify, async (req, res) => {
       [board_id]
     );
     to_send.title = name.rows[0].title;
+
     const lists = await pool.query(`SELECT * FROM lists WHERE board_id=$1`, [
       board_id
     ]);
@@ -47,6 +49,12 @@ router.get("/:board_id", verify, async (req, res) => {
       new_list.tasks = getSortedTasks(tasks.rows);
       to_send.lists[`${new_list.list_id}`] = new_list;
     }
+
+    const collabs = await pool.query(
+      `SELECT users.email FROM userboards INNER JOIN users ON userboards.user_id=users.email AND userboards.board_id=$1`,
+      [board_id]
+    );
+    to_send.collaborators = collabs.rows;
     res.send(to_send);
   } catch (error) {
     console.error(error.message);

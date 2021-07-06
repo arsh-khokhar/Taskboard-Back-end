@@ -3,7 +3,6 @@ const verify = require("./verifyToken");
 const pool = require("../dbConfig");
 
 router.post("/", verify, async (req, res) => {
-  console.log(req.body);
   try {
     const insert_res = await pool.query(
       `INSERT INTO lists (title, board_id) VALUES ($1, $2) RETURNING *`,
