@@ -7,9 +7,9 @@ router.post("/login", async (req, res) => {
   const email = req.body.email.trim();
   const password = req.body.password.trim();
   try {
-    const res_users = await pool.query(
-      `SELECT * FROM users WHERE email='${email}'`
-    );
+    const res_users = await pool.query(`SELECT * FROM users WHERE email=$1`, [
+      email
+    ]);
     if (res_users.rows.length > 0) {
       const auth = await bcrypt.compare(password, res_users.rows[0].password);
       if (auth) {
@@ -38,9 +38,9 @@ router.post("/register", async (req, res) => {
   const email = req.body.email.trim();
   const password = req.body.password.trim();
   try {
-    const res_users = await pool.query(
-      `SELECT * FROM users WHERE email='${email}'`
-    );
+    const res_users = await pool.query(`SELECT * FROM users WHERE email=$1`, [
+      email
+    ]);
     if (res_users.rows.length > 0) {
       res.status(400).send("User already exists!");
     } else {
@@ -49,7 +49,8 @@ router.post("/register", async (req, res) => {
         parseInt(process.env.SALT_ROUNDS)
       );
       const insert_res = await pool.query(
-        `INSERT INTO users (email, password) VALUES ('${email}','${hash}') RETURNING email`
+        `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *`,
+        [email, password]
       );
       if (insert_res.rowCount > 0) {
         res
