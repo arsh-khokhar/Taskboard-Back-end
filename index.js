@@ -15,4 +15,8 @@ app.use("/api/boards", boardsRoute);
 app.use("/api/lists", listsRoute);
 app.use("/api/tasks", tasksRoute);
 
+app.get("/api", async (req, res) => {
+  res.status(200).send("Welcome to Taskboard API");
+});
+
 app.listen(5000, () => console.log(`Server has started!`));
