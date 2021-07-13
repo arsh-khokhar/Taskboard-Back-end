@@ -37,12 +37,33 @@ router.post("/delete", verify, async (req, res) => {
 router.post("/update", verify, async (req, res) => {
   try {
     const update_res = await pool.query(
-      `UPDATE tasks SET title=$1, description=$2 WHERE task_id=$3 RETURNING *`,
-      [req.body.title, req.body.description, req.body.task_id]
+      `UPDATE tasks SET title=$1, description=$2, priority=$3 WHERE task_id=$4 RETURNING *`,
+      [
+        req.body.title,
+        req.body.description,
+        req.body.priority ? req.body.priority.toLowerCase() : null,
+        req.body.task_id
+      ]
     );
     if (update_res.rowCount <= 0) {
+      console.log("not able to update the task");
       res.status(400).send("Could not update the task!");
     } else {
+      for (i in req.body.assignees) {
+        const insert_res = await pool.query(
+          `INSERT INTO taskassignees (task_id, user_id, board_id) VALUES ($1, $2, $3) RETURNING *`,
+          [req.body.task_id, req.body.assignees[i], req.body.board_id]
+        );
+        if (insert_res.rowCount <= 0) {
+          console.log("not able to add assignees to the task");
+        }
+      }
+      for (i in req.body.removed_assignees) {
+        const delete_res = await pool.query(
+          `DELETE FROM taskassignees WHERE task_id=$1 AND user_id=$2`,
+          [req.body.task_id, req.body.removed_assignees[i]]
+        );
+      }
       res.status(200).send("Task updated");
     }
   } catch (error) {

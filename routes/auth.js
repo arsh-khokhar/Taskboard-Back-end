@@ -24,9 +24,11 @@ router.post("/login", async (req, res) => {
           .header("auth-token")
           .send(token);
       } else {
+        console.log("password was incorrect");
         res.status(400).send("Password is incorrect!");
       }
     } else {
+      console.log("user does not exist");
       res.status(400).send("User does not exist!");
     }
   } catch (error) {
