@@ -52,7 +52,7 @@ router.post("/register", async (req, res) => {
       );
       const insert_res = await pool.query(
         `INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *`,
-        [email, password]
+        [email, hash]
       );
       if (insert_res.rowCount > 0) {
         res
