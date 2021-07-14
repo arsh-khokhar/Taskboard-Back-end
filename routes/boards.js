@@ -151,7 +151,7 @@ router.post("/:board_id/remove_collab", verify, async (req, res) => {
       [req.body.user_id, req.params.board_id]
     );
 
-    if (delete_res.rowCount > 0 && delete_assignments.rowCount > 0) {
+    if (delete_res.rowCount > 0) {
       res.status(200).send("Collaborator removed successfully!");
     } else {
       res.status(400).send("Could not remove the collaborator!");
